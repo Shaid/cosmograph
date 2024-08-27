@@ -1,0 +1,341 @@
+---
+import { Image } from 'astro:assets'
+
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+import Hero from '../../components/Hero.astro'
+import Icon from '../../components/Icon.astro'
+import Pill from '../../components/Pill.astro'
+import PartyFormComponent from '../../components/PartyFormComponent.tsx'
+
+import squishImage from '../../../public/assets/squishmallows_output.png'
+import baymax from "../../../public/assets/movies/baymax.png"
+import mitchells from "../../../public/assets/movies/mitchells.png"
+import up from "../../../public/assets/movies/up.png"
+import sing from "../../../public/assets/movies/sing.png"
+import badguys from "../../../public/assets/movies/badguys.png"
+import lego from "../../../public/assets/movies/lego.png"
+import invitees from '../../data/invitees.ts'
+
+import Actions from '../../components/Actions.astro';
+
+
+export function getStaticPaths() {	
+	const staticPaths = [] 
+	for (var invitee of invitees) {
+		staticPaths.push(
+			{
+				params: { 
+					name: invitee
+				}
+			}
+		)
+	}
+		
+  return staticPaths
+}
+
+const { name } = Astro.params
+
+const capitalise = <T extends string>(s: T) => (s[0].toUpperCase() + s.slice(1)) as Capitalize<typeof s>
+
+let overrides = {}
+
+if ( name == "cassandra") {
+	overrides = {
+		name: "cass",
+		extraMsg: "You don't need an invite, you're the barista and you LIVE HERE."
+	}
+}
+
+if ( name == "milly") {
+	overrides = {
+		name: "millie",
+		extraMsg: "I'm very sorry that your name is spelled incorrectly on the invite!"
+	}
+}
+
+if ( name == "muffins") {
+	overrides = {
+		name: "Jes or Paige",
+		extraMsg: "Yes, everyone got their own unique page because I'm silly."
+	}
+}
+
+if ( name == "katarina") {
+	overrides = {
+		name: "Katabeana",
+		extraMsg: "Hey wait, you look familiar. Isn't this YOUR party?"
+	}
+}
+
+if ( name == "lukas") {
+	overrides = {
+		name: "Lukasa Pukasa",
+		extraMsg: "You don't need an invite, sweetheart! But no stinky farts!"
+	}
+}
+
+---
+
+<BaseLayout>
+	<div class="stack gap-20 lg:gap-48">
+		<div class="wrapper stack gap-8 lg:gap-20">
+			<header class="hero">
+				<Hero
+					title=`Hello ${capitalise(overrides.name || name)}!``
+					tagline="You are invited to Katarina's Squishmallow Movie Night!"
+					align="start"
+				>
+					<div>
+						{overrides.extraMsg || ""}
+					</div>
+					
+				</Hero>
+				
+				<Image 
+				alt="artwork of a number of squishmallows"
+				height={480}
+				densities={[1, 1.5, 2, 3, 4]}
+				src={squishImage}
+				/>
+			</header>
+			
+			
+			<PartyFormComponent client:only="preact" who={name}>
+				<input name="movie" type="radio" id="movie_baymax" value="baymax"/>
+					<label for="movie_baymax">
+					<Image src={baymax} alt="Big Hero 6" />					
+				</label>
+                <input name="movie" type="radio" id="movie_mitchells" value="mitchells" />
+					<label for="movie_mitchells">
+					<Image src={mitchells} alt="The Mitchells vs. the Machines" />
+				</label>
+                <input name="movie" type="radio" id="movie_up" value="up" />
+					<label for="movie_up">
+					<Image src={up} alt="Up" />
+				</label>
+                <input name="movie" type="radio" id="movie_sing" value="sing" />
+					<label for="movie_sing">
+					<Image src={sing} alt="Sing" />			
+				</label>
+                <input name="movie" type="radio" id="movie_badguys" value="badguys" />
+					<label for="movie_badguys">
+					<Image src={badguys} alt="The Bad Guys" />
+				</label>
+                <input name="movie" type="radio"id="movie_lego" value="lego" />
+					<label for="movie_lego">
+					<Image src={lego} alt="The LEGO Movie" />					
+				</label>
+			</PartyFormComponent>
+
+			<Actions />
+		</div>
+
+		</main>
+
+		
+	</div>
+</BaseLayout>
+
+<style>
+	.hero {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2rem;
+	}
+
+	.roles {
+		display: none;
+	}
+
+	.hero img {
+		aspect-ratio: 5 / 4;
+		object-fit: cover;
+		object-position: top;
+		border-radius: 1.5rem;
+		box-shadow: var(--shadow-md);
+	}
+
+	@media (min-width: 50em) {
+		.hero {
+			display: grid;
+			grid-template-columns: 6fr 4fr;
+			padding-inline: 2.5rem;
+			gap: 3.75rem;
+		}
+
+		.roles {
+			margin-top: 0.5rem;
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		.hero img {
+			aspect-ratio: 3 / 4;
+			border-radius: 4.5rem;
+			object-fit: cover;
+		}
+	}
+
+	/* ====================================================== */
+
+	.section {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.with-background {
+		position: relative;
+	}
+
+	.with-background::before {
+		--hero-bg: var(--bg-image-subtle-2);
+
+		content: '';
+		position: absolute;
+		pointer-events: none;
+		left: 50%;
+		width: 100vw;
+		aspect-ratio: calc(2.25 / var(--bg-scale));
+		top: 0;
+		transform: translateY(-75%) translateX(-50%);
+		background:
+			url('/assets/backgrounds/noise.png') top center/220px repeat,
+			var(--hero-bg) center center / var(--bg-gradient-size) no-repeat,
+			var(--gray-999);
+		background-blend-mode: overlay, normal, normal, normal;
+		mix-blend-mode: var(--bg-blend-mode);
+		z-index: -1;
+	}
+
+	.with-background.bg-variant::before {
+		--hero-bg: var(--bg-image-subtle-1);
+	}
+
+	.section-header {
+		justify-self: center;
+		text-align: center;
+		max-width: 50ch;
+		font-size: var(--text-md);
+		color: var(--gray-300);
+	}
+
+	.section-header h3 {
+		font-size: var(--text-2xl);
+	}
+
+	@media (min-width: 50em) {
+		.section {
+			grid-template-columns: repeat(4, 1fr);
+			grid-template-areas: 'header header header header' 'gallery gallery gallery gallery';
+			gap: 5rem;
+		}
+
+		.section.with-cta {
+			grid-template-areas: 'header header header cta' 'gallery gallery gallery gallery';
+		}
+
+		.section-header {
+			grid-area: header;
+			font-size: var(--text-lg);
+		}
+
+		.section-header h3 {
+			font-size: var(--text-4xl);
+		}
+
+		.with-cta .section-header {
+			justify-self: flex-start;
+			text-align: left;
+		}
+
+		.gallery {
+			grid-area: gallery;
+		}
+
+		.cta {
+			grid-area: cta;
+		}
+	}
+
+	/* ====================================================== */
+
+	.mention-card {
+		display: flex;
+		height: 7rem;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		border: 1px solid var(--gray-800);
+		border-radius: 1.5rem;
+		color: var(--gray-300);
+		background: var(--gradient-subtle);
+		box-shadow: var(--shadow-sm);
+	}
+
+	@media (min-width: 50em) {
+		.mention-card {
+			border-radius: 1.5rem;
+			height: 9.5rem;
+		}
+	}
+
+	
+input[type="radio"][id^="movie_"] {
+    display: none;
+  }
+  
+  label {
+    padding: 1rem;
+    display: block;
+	float: left;
+    position: relative;
+    margin: 1rem;
+    cursor: pointer;
+  }
+  
+  label:before {
+    background-color: white;
+    color: white;
+    content: " ";
+    display: block;
+    border-radius: 50%;
+	box-shadow: 0 0 5px #333;
+    position: absolute;
+    top: -5px;
+    left: 5px;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 28px;
+    transition-duration: 0.2s;
+    transform: scale(0);
+	z-index: 10;
+  }
+  
+  label img {
+    height: 15rem;
+    width: auto;
+    transition-duration: 0.2s;
+    transform-origin: 50% 50%;
+  }
+  
+  :checked + label {
+    border-color: #cf5707;
+  }
+  
+  :checked + label:before {
+    content: "✓";
+    background-color: grey;
+    transform: scale(1);
+  }
+  
+  :checked + label img {
+    transform: scale(1.2);
+    box-shadow: 0 0 5px #333;
+    z-index: -10;
+  }
+	
+</style>
