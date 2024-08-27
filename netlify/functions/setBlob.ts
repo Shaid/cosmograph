@@ -1,11 +1,11 @@
 import type { Config, Context } from "@netlify/functions"
 import { getStore } from "@netlify/blobs";
-import { defaultFetchOptions } from './defaults.ts'
+import { defaultFetchOptions, defaultStore } from './defaults.ts'
 
 export default async (request: Request, context: Context) => {
     const { who } = context.params  
     const payload = await request.json()
-    const store = getStore("katarinas-8th")
+    const store = getStore(defaultStore)
 
     await store.setJSON(who, payload)
 

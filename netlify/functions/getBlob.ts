@@ -1,14 +1,11 @@
 import type { Config, Context } from "@netlify/functions"
 import { getStore } from "@netlify/blobs"
-import { defaultFetchOptions } from './defaults.ts'
+import { defaultFetchOptions, defaultStore } from './defaults.ts'
 
 
 export default async (request: Request, context: Context) => {
     const { who } = context.params
-    const store = getStore({
-      name: "katarinas-8th",
-      consistency: "strong" 
-    })
+    const store = getStore(defaultStore)
     const data = await store.get(who)
   
     return new Response(data, defaultFetchOptions)
